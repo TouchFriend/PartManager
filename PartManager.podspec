@@ -30,7 +30,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '10.0'
 
-  s.source_files = 'PartManager/Classes/**/*'
+  s.source_files = 'class/**/*'
   
   # s.resource_bundles = {
   #   'PartManager' => ['PartManager/Assets/*.png']
