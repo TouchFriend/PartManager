@@ -1,0 +1,6 @@
+use_frameworks!
+target 'PartManager_Tests' do
+  pod 'PartManager', :path => '../'
+  
+  
+end
