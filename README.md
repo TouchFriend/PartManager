@@ -1,0 +1,2 @@
+# PartManager
+解耦UIViewController的业务代码，分发UIViewController的生命周期
