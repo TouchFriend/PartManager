@@ -16,9 +16,9 @@ public class PartLog {
 
 
 extension String {
-    static func formateDate(_ date: Date, formate: String) -> String {
+    static func formatDate(_ date: Date, format: String) -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = formate
+        dateFormatter.dateFormat = format
         return dateFormatter.string(from: date)
     }
 }
@@ -41,7 +41,7 @@ func DLog(_ message: String,
         return
     }
 #if DEBUG
-    let time = String.formateDate(Date(), formate: "yyyy-MM-dd HH:mm:ss.SSSSSS")
+    let time = String.formatDate(Date(), format: "yyyy-MM-dd HH:mm:ss.SSSSSS")
     print("\(time) \(file.components(separatedBy: "/").last ?? ""):\(line):\(column): \(message)")
 #endif
 }
