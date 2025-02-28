@@ -23,10 +23,14 @@ open class PartManager {
         return [:]
     }
     
+    // TODO: - 加锁
     /// 注册的模块
     public private(set) var parts: [PartType: Part] = [:]
     
     public private(set) var config: PartConfig
+    
+    /// 模块通信
+    private let conversation = Conversation()
     
     public init(config: PartConfig) {
         self.config = config
@@ -42,6 +46,31 @@ open class PartManager {
 
 extension PartManager {
     
+    public func contains(_ partType: PartType) -> Bool {
+        parts.keys.contains(partType)
+    }
+    
+    public func getPart(_ partType: PartType) -> Part? {
+        if let part = getRegisteredPart(partType) {
+            return part
+        }
+        // 是不是懒加载模块
+        if let partClass = lazyParts[partType] {
+            registerPart(partType, partClass: partClass)
+            let part = getRegisteredPart(partType)
+            return part
+        }
+        return nil
+    }
+    
+    public func getRegisteredPart(_ partType: PartType) -> Part? {
+        parts[partType]
+    }
+}
+
+// MARK: - 注册
+extension PartManager {
+    
     private func registerDirectPart() {
         for (partType, partClass) in directParts {
             registerPart(partType, partClass: partClass)
@@ -49,18 +78,72 @@ extension PartManager {
     }
     
     public func registerPart(_ partType: PartType, partClass: Part.Type) {
-        let part = partClass.init(partManager: self, config: config)
-        if parts.keys.contains(partType) {
-            DLog("duplicate register,type:\(partType),old:\(type(of: parts[partType]!)),new:\(type(of: part))")
+        if let part = parts[partType] {
+            DLog("duplicate register,type:\(partType),old:\(type(of: part)),new:\(partClass)")
+            return
         }
-        parts[partType] = part
+        let newPart = partClass.init(partManager: self, config: config)
+        parts[partType] = newPart
     }
     
     public func unRegisterPart(_ partType: PartType) {
         parts[partType] = nil
     }
+    
 }
 
+// MARK: - 模块通信
+extension PartManager {
+    
+    public typealias NotificationName = Conversation.NotificationName
+    public typealias NotificationBlock = Conversation.NotificationBlock
+    
+    public func addObserver(part: Part,
+                            notificationName name: NotificationName,
+                            cb block: @escaping NotificationBlock) {
+        conversation.addObserver(part: part,
+                                 notificationName: name,
+                                 cb: block)
+    }
+    
+    public func removeObserver(part: Part) {
+        conversation.removeObserver(part: part)
+    }
+    
+    public func removeObserver(part: Part,
+                               notificationName name: NotificationName) {
+        conversation.removeObserver(part: part,
+                                    notificationName: name)
+    }
+    
+    public func postNotification(to partType: PartType,
+                                 notificationName name: NotificationName,
+                                 userInfo: Any?) {
+        guard let part = getPart(partType) else { return }
+        postNotification(to: part,
+                         notificationName: name,
+                         userInfo: userInfo)
+    }
+    
+    public func postNotification(notificationName name: NotificationName,
+                                 userInfo: Any?) {
+        for part in parts.values {
+            postNotification(to: part,
+                             notificationName: name,
+                             userInfo: userInfo)
+        }
+    }
+    
+    private func postNotification(to part: Part,
+                                  notificationName name: NotificationName,
+                                  userInfo: Any?) {
+        conversation.post(to: part,
+                          notificationName: name,
+                          userInfo: userInfo)
+    }
+}
+
+// MARK: - config
 extension PartManager {
     
     public var viewController: UIViewController? {
@@ -69,7 +152,7 @@ extension PartManager {
 }
 
 
-/// ViewController生命周期
+// MARK: - ViewController生命周期
 @objc extension PartManager {
     
     open func initVC() {

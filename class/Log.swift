@@ -7,6 +7,8 @@
 
 import Foundation
 
+let moduleName = "PartManager"
+
 public class PartLog {
     public static var log: ((_ message: String,
                              _ file: String,
@@ -36,6 +38,7 @@ func DLog(_ message: String,
           file: String = #file,
           line: Int = #line,
           column: Int = #column) {
+    let message = "module:\(moduleName)," + message
     if let log = PartLog.log {
         log(message, file, line, column)
         return
