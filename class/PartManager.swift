@@ -31,6 +31,8 @@ open class PartManager {
     
     /// 模块通信
     private let conversation = Conversation()
+    /// 生命周期记录
+    private let lifeCycleRecord = LifeCycleRecord()
     
     public init(config: PartConfig) {
         self.config = config
@@ -83,6 +85,8 @@ extension PartManager {
             return
         }
         let newPart = partClass.init(partManager: self, config: config)
+        // 恢复生命周期
+        lifeCycleRecord.restore(newPart)
         parts[partType] = newPart
     }
     
@@ -156,48 +160,68 @@ extension PartManager {
 @objc extension PartManager {
     
     open func initVC() {
+        lifeCycleRecord.record(.initVC)
         parts.forEach { (_, part) in
             part.initVC()
         }
     }
     
     open func viewDidLoad() {
+        lifeCycleRecord.record(.viewDidLoad)
         parts.forEach { (_, part) in
             part.viewDidLoad()
         }
     }
     
     open func viewWillLayoutSubviews() {
+        lifeCycleRecord.record(.viewWillLayoutSubviews)
         parts.forEach { (_, part) in
             part.viewWillLayoutSubviews()
         }
     }
     
     open func viewDidLayoutSubviews() {
+        lifeCycleRecord.record(.viewDidLayoutSubviews)
         parts.forEach { (_, part) in
             part.viewDidLayoutSubviews()
         }
     }
     
     open func viewWillAppear(_ animated: Bool) {
+        var cycle = LifeCycle.viewWillAppear
+        cycle.animated = animated
+        lifeCycleRecord.record(cycle)
+        
         parts.forEach { (_, part) in
             part.viewWillAppear(animated)
         }
     }
     
     open func viewDidAppear(_ animated: Bool) {
+        var cycle = LifeCycle.viewDidAppear
+        cycle.animated = animated
+        lifeCycleRecord.record(cycle)
+        
         parts.forEach { (_, part) in
             part.viewDidAppear(animated)
         }
     }
     
     open func viewWillDisappear(_ animated: Bool) {
+        var cycle = LifeCycle.viewWillDisappear
+        cycle.animated = animated
+        lifeCycleRecord.record(cycle)
+        
         parts.forEach { (_, part) in
             part.viewWillDisappear(animated)
         }
     }
     
     open func viewDidDisappear(_ animated: Bool) {
+        var cycle = LifeCycle.viewDidDisappear
+        cycle.animated = animated
+        lifeCycleRecord.record(cycle)
+        
         parts.forEach { (_, part) in
             part.viewDidDisappear(animated)
         }
