@@ -9,8 +9,6 @@ import Foundation
 
 public struct LifeCycle: OptionSet {
     public let rawValue: Int
-    /// 是否动画执行
-    public var animated: Bool = true
     
     public static let initVC = LifeCycle(rawValue: 1 << 0)
     public static let viewDidLoad = LifeCycle(rawValue: 1 << 1)
@@ -32,12 +30,6 @@ public struct LifeCycle: OptionSet {
     
     
     
-}
-
-extension LifeCycle: Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.rawValue == rhs.rawValue
-    }
 }
 
 extension LifeCycle: CustomStringConvertible {
@@ -69,8 +61,9 @@ extension LifeCycle: CustomStringConvertible {
         var cycles = self
         var desArr: [String] = []
         for cycle in Self.all {
-            if let removedCycle = cycles.remove(cycle) {
-                desArr.append(removedCycle.simpleDescription)
+            if cycles.contains(cycle) {
+                cycles.remove(cycle)
+                desArr.append(cycle.simpleDescription)
             }
         }
         if cycles != .none {
@@ -80,7 +73,7 @@ extension LifeCycle: CustomStringConvertible {
     }
     
     public var description: String {
-        return "\(type(of: self))(rawValue:\(rawValue),animated:\(animated),arr:\(combieDescription))"
+        return "\(type(of: self))(rawValue:\(rawValue),arr:\(combieDescription))"
     }
     
     
@@ -109,10 +102,9 @@ public class LifeCycleRecord {
     
     public func restore(_ part: Part) {
         guard cycles != .none else { return }
-        var cycles = cycles
         for cycle in LifeCycle.all {
-            if let removedCycle = cycles.remove(cycle) {
-                executeCycle(part, cycle: removedCycle)
+            if cycles.contains(cycle) {
+                executeCycle(part, cycle: cycle)
             }
         }
     }
@@ -125,17 +117,17 @@ public class LifeCycleRecord {
         case .viewDidLoad:
             part.viewDidLoad()
         case .viewWillAppear:
-            part.viewWillAppear(cycle.animated)
+            part.viewWillAppear(true)
         case .viewWillLayoutSubviews:
             part.viewWillLayoutSubviews()
         case .viewDidLayoutSubviews:
             part.viewDidLayoutSubviews()
         case .viewDidAppear:
-            part.viewDidAppear(cycle.animated)
+            part.viewDidAppear(true)
         case .viewWillDisappear:
-            part.viewWillDisappear(cycle.animated)
+            part.viewWillDisappear(true)
         case .viewDidDisappear:
-            part.viewDidDisappear(cycle.animated)
+            part.viewDidDisappear(true)
         default:
             DLog("unknown,rawValue:\(cycle.rawValue)")
         }

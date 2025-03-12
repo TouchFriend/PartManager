@@ -188,40 +188,28 @@ extension PartManager {
     }
     
     open func viewWillAppear(_ animated: Bool) {
-        var cycle = LifeCycle.viewWillAppear
-        cycle.animated = animated
-        lifeCycleRecord.record(cycle)
-        
+        lifeCycleRecord.record(.viewWillAppear)
         parts.forEach { (_, part) in
             part.viewWillAppear(animated)
         }
     }
     
     open func viewDidAppear(_ animated: Bool) {
-        var cycle = LifeCycle.viewDidAppear
-        cycle.animated = animated
-        lifeCycleRecord.record(cycle)
-        
+        lifeCycleRecord.record(.viewDidAppear)
         parts.forEach { (_, part) in
             part.viewDidAppear(animated)
         }
     }
     
     open func viewWillDisappear(_ animated: Bool) {
-        var cycle = LifeCycle.viewWillDisappear
-        cycle.animated = animated
-        lifeCycleRecord.record(cycle)
-        
+        lifeCycleRecord.record(.viewWillDisappear)
         parts.forEach { (_, part) in
             part.viewWillDisappear(animated)
         }
     }
     
     open func viewDidDisappear(_ animated: Bool) {
-        var cycle = LifeCycle.viewDidDisappear
-        cycle.animated = animated
-        lifeCycleRecord.record(cycle)
-        
+        lifeCycleRecord.record(.viewDidDisappear)
         parts.forEach { (_, part) in
             part.viewDidDisappear(animated)
         }
