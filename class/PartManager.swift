@@ -27,15 +27,15 @@ open class PartManager {
     /// 注册的模块
     public private(set) var parts: [PartType: Part] = [:]
     
-    public private(set) var config: PartConfig
+    public private(set) var context: PartContext
     
     /// 模块通信
     private let conversation = Conversation()
     /// 生命周期记录
     private let lifeCycleRecord = LifeCycleRecord()
     
-    public init(config: PartConfig) {
-        self.config = config
+    public init(context: PartContext) {
+        self.context = context
         registerDirectPart()
     }
     
@@ -84,7 +84,7 @@ extension PartManager {
             DLog("duplicate register,type:\(partType),old:\(type(of: part)),new:\(partClass)")
             return
         }
-        let newPart = partClass.init(partManager: self, config: config)
+        let newPart = partClass.init(partManager: self, context: context)
         // 恢复生命周期
         lifeCycleRecord.restore(newPart)
         parts[partType] = newPart
@@ -147,11 +147,11 @@ extension PartManager {
     }
 }
 
-// MARK: - config
+// MARK: - context
 extension PartManager {
     
     public var viewController: UIViewController? {
-        config.viewController
+        context.viewController
     }
 }
 

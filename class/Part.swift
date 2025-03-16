@@ -11,11 +11,11 @@ open class Part: NSObject {
     
     public weak var partManager: PartManager?
     
-    public private(set) var config: PartConfig
+    public private(set) var context: PartContext
     
-    public required init(partManager: PartManager, config: PartConfig) {
+    public required init(partManager: PartManager, context: PartContext) {
         self.partManager = partManager
-        self.config = config
+        self.context = context
     }
     
     deinit {
@@ -111,10 +111,10 @@ extension Part {
     }
 }
 
-// MARK: - config
+// MARK: - context
 extension Part {
     
     public var viewController: UIViewController? {
-        config.viewController
+        context.viewController
     }
 }

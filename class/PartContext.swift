@@ -1,5 +1,5 @@
 //
-//  PartConfig.swift
+//  PartContext.swift
 //  PartManager
 //
 //  Created by touchWorld on 2025/2/19.
@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-open class PartConfig {
+open class PartContext {
     
     public weak var viewController: UIViewController?
     
