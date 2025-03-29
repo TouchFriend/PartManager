@@ -78,7 +78,7 @@ extension Part {
     
     /// 取消监听所有通知
     public func unregisterAllNotification() {
-        partManager?.removeObserver(part: self)
+        partManager?.removeObserverAllNotification(part: self)
     }
     
     /// 取消监听通知

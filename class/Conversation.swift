@@ -10,9 +10,7 @@ import Foundation
 public class Conversation {
     
     // TODO: - 加锁
-    private var infos = NSMapTable<Part, Info>(keyOptions: .weakMemory,
-                                               valueOptions: .strongMemory,
-                                               capacity: 0)
+    private var infos: [Part: Info] = [:]
     
     public init() {
         
@@ -26,7 +24,7 @@ public class Conversation {
     }
     
     public func removeObserver(part: Part) {
-        infos.removeObject(forKey: part)
+        infos.removeValue(forKey: part)
     }
     
     public func removeObserver(part: Part,
@@ -46,11 +44,11 @@ public class Conversation {
     }
     
     private func getInfo(_ part: Part) -> Info {
-        if let info = infos.object(forKey: part) {
+        if let info = infos[part] {
             return info
         }
         let info = Info()
-        infos.setObject(info, forKey: part)
+        infos[part] = info
         return info
     }
     

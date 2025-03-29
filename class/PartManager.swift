@@ -85,13 +85,29 @@ extension PartManager {
             return
         }
         let newPart = partClass.init(partManager: self, context: context)
+        parts[partType] = newPart
         // 恢复生命周期
         lifeCycleRecord.restore(newPart)
-        parts[partType] = newPart
     }
     
-    public func unRegisterPart(_ partType: PartType) {
+    public func unRegisterPart(partType: PartType) {
+        if let part = parts[partType] {
+            // 注销通知
+            removeObserverAllNotification(part: part)
+        }
         parts[partType] = nil
+    }
+    
+    public func unRegisterPart(part: Part) {
+        var partTypes: [PartType] = []
+        for (partType, regPart) in parts {
+            if regPart === part {
+                partTypes.append(partType)
+            }
+        }
+        partTypes.forEach { partType in
+            unRegisterPart(partType: partType)
+        }
     }
     
 }
@@ -110,7 +126,7 @@ extension PartManager {
                                  cb: block)
     }
     
-    public func removeObserver(part: Part) {
+    public func removeObserverAllNotification(part: Part) {
         conversation.removeObserver(part: part)
     }
     

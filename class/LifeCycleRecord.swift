@@ -97,7 +97,7 @@ public class LifeCycleRecord {
         } else if cycle == .viewWillDisappear {
             cycles.remove([.viewDidDisappear])
         }
-        DLog("\(#function),cycle:\(cycle),cycles:\(cycles)")
+//        DLog("\(#function),cycle:\(cycle),cycles:\(cycles)")
     }
     
     public func restore(_ part: Part) {
